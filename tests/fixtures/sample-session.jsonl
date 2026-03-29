@@ -1,0 +1,8 @@
+{"type":"file-history-snapshot","messageId":"abc","snapshot":{},"isSnapshotUpdate":false}
+{"parentUuid":null,"isSidechain":false,"promptId":"p1","type":"user","message":{"role":"user","content":"hello world"},"uuid":"u1"}
+{"parentUuid":"u1","isSidechain":false,"message":{"model":"claude","id":"m1","type":"message","role":"assistant","content":[{"type":"thinking","thinking":"let me think","signature":"sig"},{"type":"text","text":"Hi there!"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{}},"requestId":"r1","type":"assistant","uuid":"a1"}
+{"parentUuid":"a1","isSidechain":false,"type":"system","subtype":"stop_hook_summary","hookCount":0,"hookInfos":[],"uuid":"s1"}
+{"type":"file-history-snapshot","messageId":"abc2","snapshot":{},"isSnapshotUpdate":false}
+{"parentUuid":"s1","isSidechain":false,"promptId":"p2","type":"user","message":{"role":"user","content":[{"type":"text","text":"run a command"},{"type":"tool_result","tool_use_id":"tu1","content":[{"type":"text","text":"command output here"}]}]},"uuid":"u2"}
+{"parentUuid":"u2","isSidechain":false,"message":{"model":"claude","id":"m2","type":"message","role":"assistant","content":[{"type":"tool_use","id":"tu2","name":"Bash","input":{"command":"ls","description":"List files"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{}},"requestId":"r2","type":"assistant","uuid":"a2"}
+{"parentUuid":"a2","isSidechain":false,"type":"system","subtype":"turn_duration","durationMs":1500,"messageCount":2,"uuid":"s2"}
