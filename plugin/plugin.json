@@ -1,0 +1,44 @@
+{
+  "name": "glassboard",
+  "version": "1.0.0",
+  "description": "Accessible web viewer for Claude Code sessions with real-time updates, sounds, and notifications",
+  "author": "Akash Kakkar",
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh",
+        "timeout": 10000
+      }
+    ],
+    "SessionEnd": [
+      {
+        "type": "command",
+        "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-end.sh",
+        "timeout": 5000
+      }
+    ]
+  },
+  "settings": {
+    "autoOpen": {
+      "type": "boolean",
+      "default": true,
+      "description": "Automatically open Glassboard in the browser when a session starts"
+    },
+    "stopOnSessionEnd": {
+      "type": "boolean",
+      "default": false,
+      "description": "Stop the Glassboard server when the Claude session ends"
+    },
+    "port": {
+      "type": "number",
+      "default": 4001,
+      "description": "Port for the Glassboard server"
+    },
+    "glassboardPath": {
+      "type": "string",
+      "default": "",
+      "description": "Path to the Glassboard project directory. Leave empty to use the plugin's bundled copy."
+    }
+  }
+}
