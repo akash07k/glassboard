@@ -1,28 +1,31 @@
-import { existsSync, readFileSync, unlinkSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { resolve, dirname } from "path";
 
 const pluginDir = resolve(dirname(Bun.main), "..");
 const settingsFile = resolve(pluginDir, ".local.md");
-const pidFile = resolve(pluginDir, ".glassboard.pid");
 
-// Read stopOnSessionEnd setting (default: false)
+// Defaults
+let port = 4001;
 let stopOnEnd = false;
 
 if (existsSync(settingsFile)) {
   const text = readFileSync(settingsFile, "utf-8");
-  const match = text.match(/stopOnSessionEnd:\s*(\w+)/);
-  if (match) stopOnEnd = match[1] === "true";
+  const stopMatch = text.match(/stopOnSessionEnd:\s*(\w+)/);
+  const portMatch = text.match(/port:\s*(\d+)/);
+  if (stopMatch) stopOnEnd = stopMatch[1] === "true";
+  if (portMatch) port = Number(portMatch[1]);
 }
 
 if (!stopOnEnd) process.exit(0);
 
-// Kill the server if PID file exists
-if (existsSync(pidFile)) {
-  const pid = Number(readFileSync(pidFile, "utf-8").trim());
-  try {
-    process.kill(pid);
-  } catch {}
-  try {
-    unlinkSync(pidFile);
-  } catch {}
+// Kill the server by finding the process listening on our port.
+// This is more reliable than PID files which can become stale.
+if (process.platform === "win32") {
+  Bun.spawn(["powershell.exe", "-NoProfile", "-Command",
+    `Stop-Process -Id (Get-NetTCPConnection -LocalPort ${port} -ErrorAction SilentlyContinue).OwningProcess -Force -ErrorAction SilentlyContinue`
+  ], { stdio: ["ignore", "ignore", "ignore"] });
+} else {
+  Bun.spawn(["bash", "-c", `kill $(lsof -t -i:${port}) 2>/dev/null`], {
+    stdio: ["ignore", "ignore", "ignore"],
+  });
 }
