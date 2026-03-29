@@ -1,0 +1,14 @@
+{
+  "name": "glassboard-marketplace",
+  "owner": {
+    "name": "Akash Kakkar"
+  },
+  "plugins": [
+    {
+      "name": "glassboard",
+      "source": "./",
+      "description": "Accessible web viewer for Claude Code sessions with real-time updates, sounds, and notifications",
+      "version": "1.0.0"
+    }
+  ]
+}

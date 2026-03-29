@@ -117,9 +117,24 @@ Glassboard includes a plugin that auto-launches the viewer when you start a Clau
 
 ### Install the plugin
 
+**From the terminal (CLI):**
+
 ```bash
-claude plugin install ./plugin
+# Add the marketplace (use absolute path if running from a different project)
+claude plugin marketplace add /path/to/glassboard/plugin
+
+# Install the plugin
+claude plugin install glassboard@glassboard-marketplace
 ```
+
+**From inside a Claude Code session:**
+
+```
+/plugin marketplace add /path/to/glassboard/plugin
+/plugin install glassboard@glassboard-marketplace
+```
+
+Replace `/path/to/glassboard` with the actual path to your Glassboard directory.
 
 ### What it does
 
