@@ -41,15 +41,20 @@ if (projectId && sessionId) {
   url += `?project=${projectId}`;
 }
 
-function openUrl(target: string) {
+// Await the browser process so it completes before the hook exits.
+// Without this, Claude Code kills the hook's process tree before the
+// browser opener (rundll32/open/xdg-open) finishes its work.
+async function openUrl(target: string): Promise<void> {
   if (!autoOpen) return;
+  let proc;
   if (process.platform === "win32") {
-    Bun.spawn(["rundll32.exe", "url.dll,FileProtocolHandler", target]);
+    proc = Bun.spawn(["rundll32.exe", "url.dll,FileProtocolHandler", target]);
   } else if (process.platform === "darwin") {
-    Bun.spawn(["open", target]);
+    proc = Bun.spawn(["open", target]);
   } else {
-    Bun.spawn(["xdg-open", target]);
+    proc = Bun.spawn(["xdg-open", target]);
   }
+  await proc.exited;
 }
 
 async function isServerRunning(): Promise<boolean> {
@@ -61,19 +66,25 @@ async function isServerRunning(): Promise<boolean> {
   }
 }
 
-// Start server in a truly independent process that survives hook cleanup.
-// Bun's child_process.spawn({ detached: true }) doesn't reliably detach on Windows,
-// so we use platform-native launchers that create separate process groups.
+async function registerSession(): Promise<void> {
+  if (!sessionId) return;
+  try {
+    await fetch(`http://localhost:${port}/api/sessions/register`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    });
+  } catch {}
+}
+
+// Start server via platform-native launcher so it survives hook cleanup.
 function startServer(serverFile: string): void {
   if (process.platform === "win32") {
-    // PowerShell Start-Process creates a fully independent process outside the hook's tree.
     const psCmd = `Start-Process -FilePath bun -ArgumentList 'run','${serverFile}' -WorkingDirectory '${glassboardPath}' -WindowStyle Hidden`;
     Bun.spawn(["powershell.exe", "-NoProfile", "-WindowStyle", "Hidden", "-Command", psCmd], {
       stdio: ["ignore", "ignore", "ignore"],
     });
   } else {
-    // On Unix, setsid creates a new session so the server outlives the hook's process group.
-    // Falls back to direct spawn if setsid is unavailable.
     try {
       Bun.spawn(["setsid", "bun", "run", serverFile], {
         cwd: glassboardPath,
@@ -90,23 +101,20 @@ function startServer(serverFile: string): void {
 
 // --- Main flow ---
 
-if (await isServerRunning()) {
-  openUrl(url);
-  process.exit(0);
+// Start server if not already running
+if (!(await isServerRunning())) {
+  const serverFile = resolve(glassboardPath, "server.ts");
+  if (!existsSync(serverFile)) {
+    process.stderr.write(`Glassboard not found at ${glassboardPath}\n`);
+    process.exit(0);
+  }
+  startServer(serverFile);
+  for (let i = 0; i < 10; i++) {
+    if (await isServerRunning()) break;
+    await Bun.sleep(500);
+  }
 }
 
-const serverFile = resolve(glassboardPath, "server.ts");
-if (!existsSync(serverFile)) {
-  process.stderr.write(`Glassboard not found at ${glassboardPath}\n`);
-  process.exit(0);
-}
-
-startServer(serverFile);
-
-// Wait for server to be ready (max 5 seconds)
-for (let i = 0; i < 10; i++) {
-  if (await isServerRunning()) break;
-  await Bun.sleep(500);
-}
-
-openUrl(url);
+// Register this session, then open the browser
+await registerSession();
+await openUrl(url);

@@ -16,16 +16,23 @@ if (existsSync(settingsFile)) {
   if (portMatch) port = Number(portMatch[1]);
 }
 
-if (!stopOnEnd) process.exit(0);
+// Read session info from hook stdin
+const input = await Bun.stdin.text();
+let sessionId = "";
+try {
+  const data = JSON.parse(input);
+  sessionId = data.session_id ?? "";
+} catch {}
 
-// Kill the server by finding the process listening on our port.
-// This is more reliable than PID files which can become stale.
-if (process.platform === "win32") {
-  Bun.spawn(["powershell.exe", "-NoProfile", "-Command",
-    `Stop-Process -Id (Get-NetTCPConnection -LocalPort ${port} -ErrorAction SilentlyContinue).OwningProcess -Force -ErrorAction SilentlyContinue`
-  ], { stdio: ["ignore", "ignore", "ignore"] });
-} else {
-  Bun.spawn(["bash", "-c", `kill $(lsof -t -i:${port}) 2>/dev/null`], {
-    stdio: ["ignore", "ignore", "ignore"],
-  });
+// Deregister this session from the server.
+// If stopOnSessionEnd is true, tell the server to shut down when all sessions are gone.
+// The server handles the grace period and lifecycle — no process killing needed.
+if (sessionId) {
+  try {
+    await fetch(`http://localhost:${port}/api/sessions/deregister`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sessionId, shutdownIfEmpty: stopOnEnd }),
+    });
+  } catch {}
 }

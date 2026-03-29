@@ -318,6 +318,47 @@ async function handleApi(req: Request, url: URL): Promise<Response> {
     return jsonResponse({ indices });
   }
 
+  // Session lifecycle management — hooks call these to register/deregister
+  if (path === "/api/sessions/register" && req.method === "POST") {
+    const body = (await req.json()) as { sessionId?: string };
+    if (body.sessionId) {
+      activeSessions.set(body.sessionId, Date.now());
+      if (shutdownTimer) {
+        clearTimeout(shutdownTimer);
+        shutdownTimer = null;
+        console.log("[sessions] shutdown cancelled — new session registered");
+      }
+      console.log(`[sessions] registered ${body.sessionId} (${activeSessions.size} active)`);
+    }
+    return jsonResponse({ ok: true, active: activeSessions.size });
+  }
+
+  if (path === "/api/sessions/deregister" && req.method === "POST") {
+    const body = (await req.json()) as { sessionId?: string; shutdownIfEmpty?: boolean };
+    if (body.sessionId) {
+      activeSessions.delete(body.sessionId);
+      console.log(`[sessions] deregistered ${body.sessionId} (${activeSessions.size} active)`);
+    }
+    if (body.shutdownIfEmpty && activeSessions.size === 0 && !shutdownTimer) {
+      console.log(`[sessions] no active sessions — shutting down in ${SHUTDOWN_GRACE_MS / 1000}s`);
+      shutdownTimer = setTimeout(() => {
+        if (activeSessions.size === 0) {
+          console.log("[sessions] grace period elapsed, exiting");
+          process.exit(0);
+        }
+        shutdownTimer = null;
+      }, SHUTDOWN_GRACE_MS);
+    }
+    return jsonResponse({ ok: true, active: activeSessions.size });
+  }
+
+  if (path === "/api/sessions/active" && req.method === "GET") {
+    return jsonResponse({
+      sessions: Array.from(activeSessions.entries()).map(([id, at]) => ({ id, registeredAt: at })),
+      count: activeSessions.size,
+    });
+  }
+
   return jsonResponse({ error: "Not Found" }, 404);
 }
 
@@ -342,5 +383,12 @@ async function handleExport(url: URL, projectId: string, sessionId: string): Pro
     },
   });
 }
+
+// --- Session tracking for multi-session lifecycle management ---
+// Hooks register/deregister sessions via API. When all sessions have ended
+// and shutdown was requested, the server exits after a grace period.
+const activeSessions = new Map<string, number>(); // sessionId → registeredAt timestamp
+let shutdownTimer: ReturnType<typeof setTimeout> | null = null;
+const SHUTDOWN_GRACE_MS = 30_000; // 30 seconds
 
 console.log(`Glassboard running at http://localhost:${PORT}`);
