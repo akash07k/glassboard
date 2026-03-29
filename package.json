@@ -1,0 +1,24 @@
+{
+  "name": "glassboard",
+  "version": "1.0.0",
+  "description": "Accessible web viewer for Claude Code sessions",
+  "license": "MIT",
+  "author": "Akash Kakkar",
+  "private": true,
+  "scripts": {
+    "start": "bun run server.ts",
+    "dev": "bun --watch run server.ts",
+    "build": "bun run build.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "marked": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "bun-types": "latest"
+  }
+}
