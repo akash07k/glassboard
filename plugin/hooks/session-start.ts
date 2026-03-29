@@ -1,5 +1,6 @@
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve, dirname } from "path";
+import { spawn } from "child_process";
 
 const pluginDir = resolve(dirname(Bun.main), "..");
 const settingsFile = resolve(pluginDir, ".local.md");
@@ -76,12 +77,16 @@ if (!existsSync(serverFile)) {
   process.exit(0);
 }
 
-// Start the server detached so it survives hook exit
-const server = Bun.spawn(["bun", "run", serverFile], {
+// Start the server in a new process group so it survives hook termination.
+// Bun.spawn doesn't support detached mode; child_process.spawn does.
+// Without detached: true, Claude Code kills the server when cleaning up the hook's process tree.
+const child = spawn("bun", ["run", serverFile], {
   cwd: glassboardPath,
-  stdio: ["ignore", "ignore", "ignore"],
+  detached: true,
+  stdio: "ignore",
 });
-Bun.write(pidFile, String(server.pid));
+child.unref();
+writeFileSync(pidFile, String(child.pid));
 
 // Wait for server to be ready (max 5 seconds)
 for (let i = 0; i < 10; i++) {
