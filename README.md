@@ -144,7 +144,7 @@ Replace `/path/to/glassboard` with the actual path to your Glassboard directory.
 | Claude session ends | Optionally stops the server (off by default) |
 | `/glassboard` command | Opens Glassboard in the browser on demand |
 
-The plugin reads `session_id` and `cwd` from the SessionStart hook input and opens the browser at `http://localhost:4001/?project=<project>&session=<session>` — you see the current conversation immediately.
+The plugin hooks are written in TypeScript and run with Bun — the same runtime Glassboard already requires. No additional dependencies or shell tools needed. The hooks read `session_id` and `cwd` from the SessionStart input and open the browser at `http://localhost:4001/?project=<project>&session=<session>` — you see the current conversation immediately.
 
 ### Plugin settings
 

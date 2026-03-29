@@ -29,13 +29,14 @@ if ! curl -s -o /dev/null "http://localhost:$PORT/" 2>/dev/null; then
   sleep 2
 fi
 
-# Open browser
-if command -v cmd.exe &>/dev/null; then
-  cmd.exe /c start "" "http://localhost:$PORT/"
+# Open browser (cross-platform)
+URL="http://localhost:$PORT/"
+if command -v rundll32.exe &>/dev/null; then
+  rundll32.exe url.dll,FileProtocolHandler "$URL"
 elif command -v xdg-open &>/dev/null; then
-  xdg-open "http://localhost:$PORT/"
+  xdg-open "$URL"
 elif command -v open &>/dev/null; then
-  open "http://localhost:$PORT/"
+  open "$URL"
 fi
 
 echo "Glassboard is running at http://localhost:$PORT/"
