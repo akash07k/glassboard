@@ -1,0 +1,66 @@
+{
+  "port": 4001,
+  "defaults": {
+    "toggles": {
+      "user": true,
+      "assistant_text": true,
+      "assistant_thinking": false,
+      "tool_call": true,
+      "tool_result": true,
+      "system": false,
+      "local_command": true,
+      "queued": true
+    },
+    "renderMarkdown": true,
+    "exportFormat": "md",
+    "pagination": {
+      "messagesPerPage": 30,
+      "snapToTurnBoundary": true
+    },
+    "sounds": {
+      "enabled": true,
+      "profile": "default",
+      "volume": 0.7,
+      "soundWhenBackground": false,
+      "notifyWhenFocused": false,
+      "notifyMaxLength": 500,
+      "events": {
+        "SessionStart":       { "enabled": true,  "announce": true,  "notify": false, "file": "session-start.ogg", "volume": 0.8, "repeatInterval": 0, "repeatCount": 1 },
+        "UserPromptSubmit":   { "enabled": true,  "announce": true,  "notify": false, "file": "pop.ogg",          "volume": 0.7, "repeatInterval": 0, "repeatCount": 1 },
+        "PreToolUse":         { "enabled": true,  "announce": false, "notify": false, "file": "click.ogg",        "volume": 0.5, "repeatInterval": 0.5, "repeatCount": 1 },
+        "PermissionRequest":  { "enabled": true,  "announce": true,  "notify": true,  "file": "permission.ogg",   "volume": 0.9, "repeatInterval": 2, "repeatCount": 3 },
+        "PostToolUse":        { "enabled": true,  "announce": false, "notify": false, "file": "ding.ogg",         "volume": 0.5, "repeatInterval": 0.5, "repeatCount": 1 },
+        "PostToolUseFailure": { "enabled": true,  "announce": true,  "notify": true,  "file": "error-click.ogg",  "volume": 0.8, "repeatInterval": 0, "repeatCount": 2 },
+        "Notification":       { "enabled": true,  "announce": true,  "notify": true,  "file": "notify.ogg",       "volume": 0.9, "repeatInterval": 0, "repeatCount": 1 },
+        "SubagentStart":      { "enabled": true,  "announce": true,  "notify": false, "file": "whoosh-in.ogg",    "volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "SubagentStop":       { "enabled": true,  "announce": true,  "notify": false, "file": "whoosh-out.ogg",   "volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "TaskCreated":        { "enabled": true,  "announce": true,  "notify": false, "file": "task-add.ogg",     "volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "TaskCompleted":      { "enabled": true,  "announce": true,  "notify": true,  "file": "task-done.ogg",    "volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "Stop":               { "enabled": true,  "announce": true,  "notify": true,  "file": "complete.ogg",     "volume": 0.8, "repeatInterval": 0, "repeatCount": 1 },
+        "StopFailure":        { "enabled": true,  "announce": true,  "notify": true,  "file": "fail.ogg",         "volume": 0.9, "repeatInterval": 0, "repeatCount": 2 },
+        "TeammateIdle":       { "enabled": true,  "announce": false, "notify": false, "file": "idle.ogg",         "volume": 0.5, "repeatInterval": 5, "repeatCount": 1 },
+        "InstructionsLoaded": { "enabled": false, "announce": false, "notify": false, "file": "load.ogg",         "volume": 0.4, "repeatInterval": 0, "repeatCount": 1 },
+        "ConfigChange":       { "enabled": false, "announce": false, "notify": false, "file": "config.ogg",       "volume": 0.4, "repeatInterval": 0, "repeatCount": 1 },
+        "CwdChanged":         { "enabled": false, "announce": false, "notify": false, "file": "folder.ogg",       "volume": 0.4, "repeatInterval": 0, "repeatCount": 1 },
+        "FileChanged":        { "enabled": false, "announce": false, "notify": false, "file": "file-change.ogg",  "volume": 0.4, "repeatInterval": 2, "repeatCount": 1 },
+        "WorktreeCreate":     { "enabled": true,  "announce": true,  "notify": false, "file": "branch-create.ogg","volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "WorktreeRemove":     { "enabled": true,  "announce": true,  "notify": false, "file": "branch-remove.ogg","volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "PreCompact":         { "enabled": true,  "announce": true,  "notify": false, "file": "compress-start.ogg","volume": 0.5, "repeatInterval": 0, "repeatCount": 1 },
+        "PostCompact":        { "enabled": true,  "announce": true,  "notify": false, "file": "compress-end.ogg", "volume": 0.5, "repeatInterval": 0, "repeatCount": 1 },
+        "SessionEnd":         { "enabled": true,  "announce": true,  "notify": true,  "file": "session-end.ogg",  "volume": 0.8, "repeatInterval": 0, "repeatCount": 1 },
+        "Elicitation":        { "enabled": true,  "announce": true,  "notify": true,  "file": "prompt.ogg",       "volume": 0.9, "repeatInterval": 0, "repeatCount": 3 },
+        "ElicitationResult":  { "enabled": true,  "announce": true,  "notify": false, "file": "confirm.ogg",      "volume": 0.7, "repeatInterval": 0, "repeatCount": 1 },
+        "AssistantResponse":  { "enabled": true,  "announce": true,  "notify": false, "file": "chime.ogg",        "volume": 0.6, "repeatInterval": 1, "repeatCount": 1 },
+        "Thinking":           { "enabled": false, "announce": false, "notify": false, "file": "low-tone.ogg",     "volume": 0.3, "repeatInterval": 2, "repeatCount": 1 },
+        "TurnComplete":       { "enabled": true,  "announce": true,  "notify": true,  "file": "complete.ogg",     "volume": 0.7, "repeatInterval": 0, "repeatCount": 1 },
+        "copy":               { "enabled": true,  "announce": true,  "notify": false, "file": "snap.ogg",         "volume": 0.7, "repeatInterval": 0, "repeatCount": 1 },
+        "export":             { "enabled": true,  "announce": true,  "notify": false, "file": "swoosh.ogg",       "volume": 0.7, "repeatInterval": 0, "repeatCount": 1 },
+        "search_match":       { "enabled": true,  "announce": true,  "notify": false, "file": "tick.ogg",         "volume": 0.5, "repeatInterval": 0, "repeatCount": 1 },
+        "search_no_match":    { "enabled": true,  "announce": true,  "notify": false, "file": "buzz.ogg",         "volume": 0.5, "repeatInterval": 0, "repeatCount": 1 },
+        "navigation_boundary":{ "enabled": true,  "announce": false, "notify": false, "file": "thud.ogg",         "volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "bookmark_add":       { "enabled": true,  "announce": true,  "notify": false, "file": "task-add.ogg",     "volume": 0.6, "repeatInterval": 0, "repeatCount": 1 },
+        "bookmark_remove":    { "enabled": true,  "announce": true,  "notify": false, "file": "task-done.ogg",    "volume": 0.6, "repeatInterval": 0, "repeatCount": 1 }
+      }
+    }
+  }
+}
