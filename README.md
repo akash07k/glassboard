@@ -162,13 +162,23 @@ glassboardPath: /path/to/glassboard
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `autoOpen` | `true` | Open browser automatically when a session starts |
-| `stopOnSessionEnd` | `false` | Kill the Glassboard server when the Claude session ends |
+| `stopOnSessionEnd` | `false` | Stop the Glassboard server when all Claude sessions have ended (with 30s grace period) |
 | `port` | `4001` | Port for the Glassboard server |
 | `glassboardPath` | plugin parent dir | Path to the Glassboard project directory |
 
 ### Multiple Claude Code sessions
 
-The plugin handles multiple sessions correctly. The first session starts the server. Subsequent sessions detect the server is already running and just open the browser to the new session. All sessions share one Glassboard instance.
+The plugin uses server-side session tracking for safe multi-session support. Each session registers itself with the Glassboard server on start and deregisters on end. Every new session opens a browser tab pointing directly to its own conversation.
+
+| Event | What happens |
+|-------|-------------|
+| 1st session starts | Server starts, session registers, browser opens |
+| 2nd session starts | Server already running, session registers, browser opens to new session |
+| 1st session ends | Session deregisters, server stays running (2nd still active) |
+| 2nd session ends | Session deregisters, server stays running (default) or starts 30s shutdown timer if `stopOnSessionEnd` is enabled |
+| New session within 30s | Shutdown timer cancels, server stays up |
+
+The server exposes `GET /api/sessions/active` for debugging which sessions are currently registered.
 
 ## Configuration
 
