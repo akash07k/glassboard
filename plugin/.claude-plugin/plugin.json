@@ -2,22 +2,8 @@
   "name": "glassboard",
   "version": "1.0.0",
   "description": "Accessible web viewer for Claude Code sessions with real-time updates, sounds, and notifications",
-  "author": "Akash Kakkar",
-  "hooks": {
-    "SessionStart": [
-      {
-        "type": "command",
-        "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh",
-        "timeout": 10000
-      }
-    ],
-    "SessionEnd": [
-      {
-        "type": "command",
-        "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-end.sh",
-        "timeout": 5000
-      }
-    ]
+  "author": {
+    "name": "Akash Kakkar"
   },
   "settings": {
     "autoOpen": {
